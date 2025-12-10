@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extreme Weather Experience</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            transition: background 1.5s ease;
+        }
+
+        .weather-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sunny Weather */
+        .sunny-bg {
+            background: linear-gradient(180deg, #1e3c72 0%, #2a5298 30%, #74b9ff 70%, #ffeaa7 100%);
+        }
+
+        .sun {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #fff9c4 0%, #ffeb3b 40%, #ff9800 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 60px #ffeb3b,
+                0 0 120px #ff9800,
+                0 0 200px #ff5722,
+                0 0 300px rgba(255, 152, 0, 0.5);
+            animation: sunPulse 4s ease-in-out infinite, sunRotate 20s linear infinite;
+        }
+
+        .sun::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            right: -30px;
+            bottom: -30px;
+            background: radial-gradient(circle, rgba(255, 235, 59, 0.3) 0%, transparent 70%);
+            animation: sunGlow 2s ease-in-out infinite alternate;
+        }
+
+        .sun-rays {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+        }
+
+        .sun-ray {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, rgba(255, 235, 59, 0.8), transparent);
+            transform-origin: left center;
+            animation: rayPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes sunPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
+        }
+
+        @keyframes sunRotate {
+            from { filter: hue-rotate(0deg); }
+            to { filter: hue-rotate(20deg); }
+        }
+
+        @keyframes sunGlow {
+            from { opacity: 0.5; transform: scale(1); }
+            to { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes rayPulse {
+            0%, 100% { opacity: 0.3; width: 150px; }
+            50% { opacity: 0.8; width: 250px; }
+        }
+
+        /* Heat waves */
+        .heat-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 150px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 152, 0, 0.1) 50px,
+                transparent 100px
+            );
+            animation: heatWave 3s ease-in-out infinite;
+        }
+
+        @keyframes heatWave {
+            0%, 100% { transform: translateX(0) scaleY(1); }
+            50% { transform: translateX(-50px) scaleY(1.5); }
+        }
+
+        /* Rainy Weather */
+        .rainy-bg {
+            background: linear-gradient(180deg, #2c3e50 0%, #4a6572 40%, #607d8b 70%, #78909c 100%);
+        }
+
+        .rain-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .raindrop {
+            position: absolute;
+            width: 3px;
+            height: 30px;
+            background: linear-gradient(180deg, transparent, rgba(174, 214, 241, 0.8));
+            border-radius: 0 0 50% 50%;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(15deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(15deg); opacity: 0.3; }
+        }
+
+        .puddle {
+            position: absolute;
+            bottom: 5%;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(174, 214, 241, 0.4), transparent);
+            animation: puddle 2s ease-out infinite;
+        }
+
+        @keyframes puddle {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        .rain-cloud {
+            position: absolute;
+            top: 5%;
+            background: linear-gradient(180deg, #546e7a 0%, #37474f 100%);
+            border-radius: 50px;
+            filter: blur(5px);
+            animation: cloudFloat 8s ease-in-out infinite;
+        }
+
+        @keyframes cloudFloat {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(30px); }
+        }
+
+        /* Stormy Weather */
+        .stormy-bg {
+            background: linear-gradient(180deg, #0d1117 0%, #1a1a2e 40%, #16213e 70%, #1f3a5f 100%);
+        }
+
+        .lightning {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(180deg, #fff, #e1f5fe, #81d4fa);
+            filter: blur(1px);
+            opacity: 0;
+            animation: lightning 5s infinite;
+            clip-path: polygon(50% 0%, 60% 40%, 80% 40%, 45% 70%, 60% 70%, 30% 100%, 40% 60%, 20% 60%);
+        }
+
+        @keyframes lightning {
+            0%, 89%, 91%, 93%, 95%, 100% { opacity: 0; height: 0; }
+            90%, 92%, 94% { opacity: 1; height: 60vh; width: 100px; }
+        }
+
+        .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            animation: flash 5s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes flash {
+            0%, 89%, 91%, 93%, 95%, 100% { opacity: 0; }
+            90%, 92%, 94% { opacity: 0.3; }
+        }
+
+        .storm-cloud {
+            position: absolute;
+            background: linear-gradient(180deg, #1a1a2e 0%, #0d1117 100%);
+            border-radius: 100px;
+            box-shadow: 
+                inset 0 -20px 40px rgba(0, 0, 0, 0.5),
+                0 10px 30px rgba(0, 0, 0, 0.8);
+            animation: stormCloud 4s ease-in-out infinite;
+        }
+
+        @keyframes stormCloud {
+            0%, 100% { transform: translateX(0) scale(1); }
+            50% { transform: translateX(-20px) scale(1.05); }
+        }
+
+        /* Snowy Weather */
+        .snowy-bg {
+            background: linear-gradient(180deg, #667db6 0%, #0082c8 40%, #b6dde8 70%, #f0f4f8 100%);
+        }
+
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 20px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            animation: snowfall linear infinite;
+        }
+
+        @keyframes snowfall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0.8; }
+        }
+
+        .snow-ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20%;
+            background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.3) 20%, white 100%);
+        }
+
+        .snowdrift {
+            position: absolute;
+            bottom: 0;
+            background: white;
+            border-radius: 100% 100% 0 0;
+            box-shadow: 0 -10px 30px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Windy Weather */
+        .windy-bg {
+            background: linear-gradient(180deg, #4a90a4 0%, #7bb3c0 40%, #a8d5ba 70%, #c8e6c9 100%);
+        }
+
+        .wind-line {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            border-radius: 50%;
+            animation: wind linear infinite;
+        }
+
+        @keyframes wind {
+            0% { transform: translateX(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100vw); opacity: 0; }
+        }
+
+        .leaf {
+            position: absolute;
+            font-size: 30px;
+            animation: leafBlow linear infinite;
+        }
+
+        @keyframes leafBlow {
+            0% { transform: translate(-50px, 0) rotate(0deg); }
+            25% { transform: translate(25vw, -50px) rotate(180deg); }
+            50% { transform: translate(50vw, 30px) rotate(360deg); }
+            75% { transform: translate(75vw, -30px) rotate(540deg); }
+            100% { transform: translate(100vw, 0) rotate(720deg); }
+        }
+
+        /* Foggy Weather */
+        .foggy-bg {
+            background: linear-gradient(180deg, #606c88 0%, #8e9eab 40%, #b8c6db 70%, #dfe9f3 100%);
+        }
+
+        .fog-layer {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 20%,
+                rgba(255, 255, 255, 0.5) 50%,
+                rgba(255, 255, 255, 0.3) 80%,
+                transparent 100%
+            );
+            animation: fog linear infinite;
+        }
+
+        @keyframes fog {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+        }
+
+        /* UI Elements */
+        .info-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+            color: white;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .temperature {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8rem;
+            font-weight: 900;
+            line-height: 1;
+            background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: tempFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes tempFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .city-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .weather-desc {
+            font-size: 1.5rem;
+            font-weight: 300;
+            opacity: 0.9;
+            letter-spacing: 2px;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            z-index: 100;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 90%;
+        }
+
+        .control-group {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 15px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .control-group h3 {
+            color: white;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn.active {
+            background: white;
+            color: #333;
+            box-shadow: 0 5px 25px rgba(255, 255, 255, 0.4);
+        }
+
+        .weather-icon {
+            font-size: 4rem;
+            margin: 20px 0;
+            animation: iconBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(-5deg); }
+            75% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .stats {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+
+        /* 3D perspective elements */
+        .perspective-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 1000px;
+            pointer-events: none;
+        }
+
+        .floating-element {
+            position: absolute;
+            transform-style: preserve-3d;
+            animation: float3d 6s ease-in-out infinite;
+        }
+
+        @keyframes float3d {
+            0%, 100% { transform: translateZ(0) rotateX(0deg) rotateY(0deg); }
+            25% { transform: translateZ(50px) rotateX(10deg) rotateY(10deg); }
+            50% { transform: translateZ(0) rotateX(0deg) rotateY(0deg); }
+            75% { transform: translateZ(50px) rotateX(-10deg) rotateY(-10deg); }
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: particle 10s linear infinite;
+        }
+
+        @keyframes particle {
+            0% { transform: translate(0, 0) scale(0); opacity: 0; }
+            10% { opacity: 1; transform: scale(1); }
+            90% { opacity: 1; }
+            100% { transform: translate(100px, -200px) scale(0); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="weather-container sunny-bg">
+        <!-- Weather Effects Container -->
+        <div id="effects"></div>
+
+        <!-- 3D Perspective Container -->
+        <div class="perspective-container" id="perspective"></div>
+
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <div class="city-name" id="cityName">Tokyo</div>
+            <div class="weather-icon" id="weatherIcon">☀️</div>
+            <div class="temperature" id="temperature">28°</div>
+            <div class="weather-desc" id="weatherDesc">Blazing Sunshine</div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="humidity">45%</div>
+                    <div class="stat-label">Humidity</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="wind">12 km/h</div>
+                    <div class="stat-label">Wind</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="feels">31°</div>
+                    <div class="stat-label">Feels Like</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <h3>🌍 Cities</h3>
+                <div class="btn-group">
+                    <button class="btn active" onclick="changeCity('tokyo')">Tokyo</button>
+                    <button class="btn" onclick="changeCity('london')">London</button>
+                    <button class="btn" onclick="changeCity('dubai')">Dubai</button>
+                    <button class="btn" onclick="changeCity('moscow')">Moscow</button>
+                    <button class="btn" onclick="changeCity('chicago')">Chicago</button>
+                </div>
+            </div>
+            <div class="control-group">
+                <h3>🌤️ Weather</h3>
+                <div class="btn-group">
+                    <button class="btn active" onclick="changeWeather('sunny')">☀️ Sunny</button>
+                    <button class="btn" onclick="changeWeather('rainy')">🌧️ Rain</button>
+                    <button class="btn" onclick="changeWeather('stormy')">⛈️ Storm</button>
+                    <button class="btn" onclick="changeWeather('snowy')">❄️ Snow</button>
+                    <button class="btn" onclick="changeWeather('windy')">💨 Windy</button>
+                    <button class="btn" onclick="changeWeather('foggy')">🌫️ Foggy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const app = document.getElementById('app');
+        const effects = document.getElementById('effects');
+        const perspective = document.getElementById('perspective');
+
+        const cities = {
+            tokyo: { name: 'Tokyo', timezone: 'JST +9' },
+            london: { name: 'London', timezone: 'GMT +0' },
+            dubai: { name: 'Dubai', timezone: 'GST +4' },
+            moscow: { name: 'Moscow', timezone: 'MSK +3' },
+            chicago: { name: 'Chicago', timezone: 'CST -6' }
+        };
+
+        const weatherTypes = {
+            sunny: {
+                icon: '☀️',
+                desc: 'Blazing Sunshine',
+                temp: [28, 42],
+                humidity: [20, 45],
+                wind: [5, 15],
+                bgClass: 'sunny-bg'
+            },
+            rainy: {
+                icon: '🌧️',
+                desc: 'Heavy Rainfall',
+                temp: [12, 22],
+                humidity: [70, 95],
+                wind: [15, 30],
+                bgClass: 'rainy-bg'
+            },
+            stormy: {
+                icon: '⛈️',
+                desc: 'Thunderstorm',
+                temp: [8, 18],
+                humidity: [80, 100],
+                wind: [40, 80],
+                bgClass: 'stormy-bg'
+            },
+            snowy: {
+                icon: '❄️',
+                desc: 'Heavy Snowfall',
+                temp: [-15, 2],
+                humidity: [60, 85],
+                wind: [10, 25],
+                bgClass: 'snowy-bg'
+            },
+            windy: {
+                icon: '💨',
+                desc: 'Extreme Winds',
+                temp: [15, 25],
+                humidity: [30, 50],
+                wind: [50, 100],
+                bgClass: 'windy-bg'
+            },
+            foggy: {
+                icon: '🌫️',
+                desc: 'Dense Fog',
+                temp: [5, 15],
+                humidity: [90, 100],
+                wind: [0, 8],
+                bgClass: 'foggy-bg'
+            }
+        };
+
+        let currentCity = 'tokyo';
+        let currentWeather = 'sunny';
+
+        function randomBetween(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function clearEffects() {
+            effects.innerHTML = '';
+            perspective.innerHTML = '';
+        }
+
+        function createSunnyEffects() {
+            // Sun
+            const sun = document.createElement('div');
+            sun.className = 'sun';
+            effects.appendChild(sun);
+
+            // Sun rays
+            const raysContainer = document.createElement('div');
+            raysContainer.className = 'sun-rays';
+            for (let i = 0; i < 12; i++) {
+                const ray = document.createElement('div');
+                ray.className = 'sun-ray';
+                ray.style.transform = `rotate(${i * 30}deg)`;
+                ray.style.animationDelay = `${i * 0.2}s`;
+                raysContainer.appendChild(ray);
+            }
+            effects.appendChild(raysContainer);
+
+            // Heat waves
+            for (let i = 0; i < 3; i++) {
+                const heatWave = document.createElement('div');
+                heatWave.className = 'heat-wave';
+                heatWave.style.bottom = `${i * 50}px`;
+                heatWave.style.animationDelay = `${i * 0.5}s`;
+                heatWave.style.opacity = 0.3 - i * 0.1;
+                effects.appendChild(heatWave);
+            }
+
+            // Floating particles
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${randomBetween(0, 100)}%`;
+                particle.style.top = `${randomBetween(30, 80)}%`;
+                particle.style.animationDelay = `${randomBetween(0, 10)}s`;
+                particle.style.background = 'rgba(255, 235, 59, 0.6)';
+                perspective.appendChild(particle);
+            }
+        }
+
+        function createRainyEffects() {
+            // Clouds
+            for (let i = 0; i < 5; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'rain-cloud';
+                cloud.style.left = `${i * 25 - 10}%`;
+                cloud.style.top = `${randomBetween(2, 10)}%`;
+                cloud.style.width = `${randomBetween(200, 400)}px`;
+                cloud.style.height = `${randomBetween(80, 150)}px`;
+                cloud.style.animationDelay = `${i * 0.5}s`;
+                effects.appendChild(cloud);
+            }
+
+            // Rain container
+            const rainContainer = document.createElement('div');
+            rainContainer.className = 'rain-container';
+            
+            // Raindrops
+            for (let i = 0; i < 150; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'raindrop';
+                drop.style.left = `${randomBetween(0, 100)}%`;
+                drop.style.height = `${randomBetween(20, 50)}px`;
+                drop.style.animationDuration = `${randomBetween(0.5, 1.2)}s`;
+                drop.style.animationDelay = `${randomBetween(0, 2000) / 1000}s`;
+                drop.style.opacity = randomBetween(3, 8) / 10;
+                rainContainer.appendChild(drop);
+            }
+            effects.appendChild(rainContainer);
+
+            // Puddles
+            for (let i = 0; i < 8; i++) {
+                const puddle = document.createElement('div');
+                puddle.className = 'puddle';
+                puddle.style.left = `${randomBetween(10, 90)}%`;
+                puddle.style.width = `${randomBetween(30, 80)}px`;
+                puddle.style.height = `${randomBetween(10, 30)}px`;
+                puddle.style.animationDelay = `${randomBetween(0, 2000) / 1000}s`;
+                effects.appendChild(puddle);
+            }
+        }
+
+        function createStormyEffects() {
+            // Storm clouds
+            for (let i = 0; i < 6; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'storm-cloud';
+                cloud.style.left = `${i * 20 - 10}%`;
+                cloud.style.top = `${randomBetween(-5, 10)}%`;
+                cloud.style.width = `${randomBetween(300, 500)}px`;
+                cloud.style.height = `${randomBetween(100, 200)}px`;
+                cloud.style.animationDelay = `${i * 0.3}s`;
+                effects.appendChild(cloud);
+            }
+
+            // Lightning bolts
+            for (let i = 0; i < 3; i++) {
+                const lightning = document.createElement('div');
+                lightning.className = 'lightning';
+                lightning.style.left = `${20 + i * 30}%`;
+                lightning.style.animationDelay = `${i * 1.7}s`;
+                effects.appendChild(lightning);
+            }
+
+            // Flash effect
+            const flash = document.createElement('div');
+            flash.className = 'flash';
+            effects.appendChild(flash);
+
+            // Heavy rain
+            const rainContainer = document.createElement('div');
+            rainContainer.className = 'rain-container';
+            
+            for (let i = 0; i < 200; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'raindrop';
+                drop.style.left = `${randomBetween(0, 100)}%`;
+                drop.style.height = `${randomBetween(30, 60)}px`;
+                drop.style.animationDuration = `${randomBetween(0.3, 0.8)}s`;
+                drop.style.animationDelay = `${randomBetween(0, 1500) / 1000}s`;
+                drop.style.opacity = randomBetween(5, 9) / 10;
+                rainContainer.appendChild(drop);
+            }
+            effects.appendChild(rainContainer);
+        }
+
+        function createSnowyEffects() {
+            // Snow ground
+            const ground = document.createElement('div');
+            ground.className = 'snow-ground';
+            effects.appendChild(ground);
+
+            // Snowdrifts
+            for (let i = 0; i < 5; i++) {
+                const drift = document.createElement('div');
+                drift.className = 'snowdrift';
+                drift.style.left = `${i * 25 - 5}%`;
+                drift.style.width = `${randomBetween(150, 300)}px`;
+                drift.style.height = `${randomBetween(50, 120)}px`;
+                effects.appendChild(drift);
+            }
+
+            // Snowflakes
+            const snowflakes = ['❄', '❅', '❆', '✻', '✼'];
+            for (let i = 0; i < 100; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.textContent = snowflakes[randomBetween(0, snowflakes.length - 1)];
+                flake.style.left = `${randomBetween(0, 100)}%`;
+                flake.style.fontSize = `${randomBetween(10, 30)}px`;
+                flake.style.animationDuration = `${randomBetween(5, 15)}s`;
+                flake.style.animationDelay = `${randomBetween(0, 10000) / 1000}s`;
+                flake.style.opacity = randomBetween(4, 10) / 10;
+                effects.appendChild(flake);
+            }
+        }
+
+        function createWindyEffects() {
+            // Wind lines
+            for (let i = 0; i < 30; i++) {
+                const line = document.createElement('div');
+                line.className = 'wind-line';
+                line.style.top = `${randomBetween(10, 90)}%`;
+                line.style.width = `${randomBetween(100, 300)}px`;
+                line.style.animationDuration = `${randomBetween(1, 3)}s`;
+                line.style.animationDelay = `${randomBetween(0, 3000) / 1000}s`;
+                effects.appendChild(line);
+            }
+
+            // Leaves
+            const leaves = ['🍃', '🍂', '🍁', '🌿'];
+            for (let i = 0; i < 20; i++) {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf';
+                leaf.textContent = leaves[randomBetween(0, leaves.length - 1)];
+                leaf.style.top = `${randomBetween(20, 80)}%`;
+                leaf.style.animationDuration = `${randomBetween(4, 8)}s`;
+                leaf.style.animationDelay = `${randomBetween(0, 5000) / 1000}s`;
+                effects.appendChild(leaf);
+            }
+
+            // Dust particles
+            for (let i = 0; i < 40; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.top = `${randomBetween(0, 100)}%`;
+                particle.style.left = `${randomBetween(0, 100)}%`;
+                particle.style.animationDelay = `${randomBetween(0, 10)}s`;
+                effects.appendChild(particle);
+            }
+        }
+
+        function createFoggyEffects() {
+            // Fog layers
+            for (let i = 0; i < 5; i++) {
+                const fog = document.createElement('div');
+                fog.className = 'fog-layer';
+                fog.style.top = `${i * 20}%`;
+                fog.style.animationDuration = `${20 + i * 5}s`;
+                fog.style.animationDelay = `${i * 2}s`;
+                fog.style.opacity = 0.5 - i * 0.05;
+                effects.appendChild(fog);
+            }
+
+            // Floating particles
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${randomBetween(0, 100)}%`;
+                particle.style.top = `${randomBetween(0, 100)}%`;
+                particle.style.width = `${randomBetween(2, 8)}px`;
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = `${randomBetween(0, 10)}s`;
+                particle.style.animationDuration = `${randomBetween(15, 30)}s`;
+                perspective.appendChild(particle);
+            }
+        }
+
+        function updateWeatherEffects(weather) {
+            clearEffects();
+            switch (weather) {
+                case 'sunny': createSunnyEffects(); break;
+                case 'rainy': createRainyEffects(); break;
+                case 'stormy': createStormyEffects(); break;
+                case 'snowy': createSnowyEffects(); break;
+                case 'windy': createWindyEffects(); break;
+                case 'foggy': createFoggyEffects(); break;
+            }
+        }
+
+        function updateUI() {
+            const weather = weatherTypes[currentWeather];
+            const city = cities[currentCity];
+
+            document.getElementById('cityName').textContent = city.name;
+            document.getElementById('weatherIcon').textContent = weather.icon;
+            document.getElementById('weatherDesc').textContent = weather.desc;
+
+            const temp = randomBetween(weather.temp[0], weather.temp[1]);
+            const humidity = randomBetween(weather.humidity[0], weather.humidity[1]);
+            const wind = randomBetween(weather.wind[0], weather.wind[1]);
+            const feelsLike = temp + randomBetween(-3, 5);
+
+            document.getElementById('temperature').textContent = `${temp}°`;
+            document.getElementById('humidity').textContent = `${humidity}%`;
+            document.getElementById('wind').textContent = `${wind} km/h`;
+            document.getElementById('feels').textContent = `${feelsLike}°`;
+
+            // Update background
+            app.className = `weather-container ${weather.bgClass}`;
+
+            // Update active buttons
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.btn').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(currentCity) || 
+                    btn.textContent.toLowerCase().includes(currentWeather)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function changeCity(city) {
+            currentCity = city;
+            updateUI();
+            
+            // Update city buttons
+            const cityBtns = document.querySelectorAll('.control-group:first-child .btn');
+            cityBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase() === city) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function changeWeather(weather) {
+            currentWeather = weather;
+            updateUI();
+            updateWeatherEffects(weather);
+            
+            // Update weather buttons
+            const weatherBtns = document.querySelectorAll('.control-group:last-child .btn');
+            weatherBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(weather)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Initialize
+        updateUI();
+        updateWeatherEffects(currentWeather);
+
+        // Add some ambient animation
+        setInterval(() => {
+            // Slightly update stats for realism
+            const weather = weatherTypes[currentWeather];
+            const humidity = randomBetween(weather.humidity[0], weather.humidity[1]);
+            document.getElementById('humidity').textContent = `${humidity}%`;
+        }, 5000);
+    </script>
+</body>
+</html>
